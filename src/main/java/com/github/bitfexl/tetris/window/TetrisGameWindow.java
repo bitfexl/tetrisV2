@@ -106,11 +106,11 @@ public class TetrisGameWindow {
         backgroundLayer.setSeparatorColor(new Color(60, 99, 130));
         backgroundLayer.setBgColor(new Color(10, 61, 98));
         BoardLayer boardLayer = new BoardLayer(imageLoader, imageBasePath, tetrisBoard, boardArea);
-        // todo: enable set
+
         holdPiece = new PieceDisplayLayer(imageLoader, imageBasePath, new DrawArea(25, 75, 90, 90));
         holdPiece.setBgColor(new Color(10, 61, 98));
         holdPiece.setBorderColor(new Color(47, 54, 64));
-        // todo: enable set
+
         previewPiece = new PieceDisplayLayer(imageLoader, imageBasePath, new DrawArea(483, 75, 90, 90));
         previewPiece.setBgColor(new Color(10, 61, 98));
         previewPiece.setBorderColor(new Color(47, 54, 64));
