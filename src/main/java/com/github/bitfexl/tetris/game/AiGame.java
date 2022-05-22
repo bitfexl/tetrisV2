@@ -8,9 +8,11 @@ import com.github.bitfexl.tetris.pieces.management.PieceManager;
 import com.github.bitfexl.tetris.window.TetrisGameWindow;
 
 public class AiGame {
+    public static final int MAX_PEEKS = 1;
+
     public static void main(String[] args) throws InterruptedException {
-        // todo: empty columns evaluator, use peek
-        // simulateGames(100);
+        // todo: empty columns evaluator
+        // simulateGames(50);
         showGame();
     }
 
@@ -18,32 +20,37 @@ public class AiGame {
         int[] scores = new int[count];
 
         Board board = new Board(10, 20);
-        Ai ai = new Ai(board, new PieceManager(new BagGenerator()), 1);
+        Ai ai = new Ai(board, new PieceManager(new BagGenerator()), MAX_PEEKS);
 
         for(int i=0; i<count; i++) {
-            while (ai.playNextPiece());
+            while (ai.playNextPiece()) {
+                if(ai.getClearedLines() % 1000 == 0) {
+                    System.out.println(ai.getClearedLines());
+                }
+            }
 
             scores[i] = ai.getClearedLines();
             board.clear();
             ai.resetClearedLines();
+
+            int minScore = Integer.MAX_VALUE;
+            int maxScore = Integer.MIN_VALUE;
+            double avg = 0;
+            for (int j=0; j<=i; j++) {
+                minScore = Math.min(minScore, scores[j]);
+                maxScore = Math.max(maxScore, scores[j]);
+                avg += scores[j];
+            }
+            avg /= i+1;
+
+            System.out.println("Simulated game " + (i+1) + "/" + count + ":");
+            System.out.println("Min: " + minScore);
+            System.out.println("Max: " + maxScore);
+            System.out.println("Avg: " + avg);
+
         }
 
-        int minScore = Integer.MAX_VALUE;
-        int maxScore = Integer.MIN_VALUE;
-        double avg = 0;
-        for(int score : scores) {
-            minScore = Math.min(minScore, score);
-            maxScore = Math.max(maxScore, score);
-            avg += score;
-        }
-        avg /= count;
-
-        System.out.println("Simulated " + count + " games!");
-        System.out.println("Min: " + minScore);
-        System.out.println("Max: " + maxScore);
-        System.out.println("Avg: " + avg);
-
-        return avg;
+        return 0;
     }
 
     public static void showGame() throws InterruptedException {
@@ -54,7 +61,7 @@ public class AiGame {
 //        window.enableDebugging();
         TetrisGameWindow.WindowStop stopWindow = window.openGameWindow();
 
-        Ai ai = new Ai(board, new PieceManager(new BagGenerator()), 1);
+        Ai ai = new Ai(board, new PieceManager(new BagGenerator()), MAX_PEEKS);
 
         while (ai.playNextPiece()) {
             window.setHoldPiece(ai.getPieceManager().getHold());

@@ -55,20 +55,19 @@ public class Ai {
         if(pieceManager.getHold() == null) {
             pieceManager.setHold(pieceManager.consumeNext());
         }
-
         Piece currentPiece = pieceManager.consumeNext();
 
-        Position bestPosition = getBestPosition(positionSimulator.getPositions(board, currentPiece));
+        Position bestPosition = getBestPosition(board, getPiecesPreview(currentPiece), 0);
 
         // game over check
         if(bestPosition.board == null) {
             return false;
         }
 
-        Position holdPosition = getBestPosition(positionSimulator.getPositions(board, pieceManager.getHold()));
+        Position bestPositionUseHold = getBestPosition(board, getPiecesPreview(pieceManager.getHold()), 0);
 
-        if(holdPosition.board != null && holdPosition.score > bestPosition.score) {
-            bestPosition = holdPosition;
+        if(bestPositionUseHold.board != null && bestPositionUseHold.score > bestPosition.score) {
+            bestPosition = bestPositionUseHold;
             currentPiece = pieceManager.hold(currentPiece);
         }
 
@@ -83,6 +82,27 @@ public class Ai {
 
     public void resetClearedLines() {
         clearedLines = 0;
+    }
+
+    private Position getBestPosition(Board board, Piece[] pieces, int start) {
+        if(start+1 == pieces.length) {
+            return getBestPosition(positionSimulator.getPositions(board, pieces[start]));
+        }
+
+        Position bestPosition = new Position();
+        bestPosition.score = -Double.MAX_VALUE;
+
+        for(Board boardPosition : positionSimulator.getPositions(board, pieces[start])) {
+            int clearedLines = boardPosition.clearLines();
+            double endScore = getBestPosition(boardPosition, pieces, start+1).score;
+            if(endScore > bestPosition.score) {
+                bestPosition.board = boardPosition;
+                bestPosition.score = endScore;
+                bestPosition.clearedLines = clearedLines;
+            }
+        }
+
+        return bestPosition;
     }
 
     private Position getBestPosition(LinkedList<Board> positions) {
@@ -100,6 +120,15 @@ public class Ai {
         }
 
         return bestPosition;
+    }
+
+    private Piece[] getPiecesPreview(Piece current) {
+        Piece[] pieces = new Piece[maxPeek + 1];
+        pieces[0] = current;
+        for(int i=1; i<pieces.length; i++) {
+            pieces[i] = pieceManager.peekNext(i-1);
+        }
+        return pieces;
     }
 
     public Board getBoard() {
