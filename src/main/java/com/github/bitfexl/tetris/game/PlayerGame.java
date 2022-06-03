@@ -67,10 +67,15 @@ public class PlayerGame {
             if(!board.hasDroppingPiece()) {
                 linesCleared += board.clearLines();
                 currentPiece = pieceManager.consumeNext();
-                board.newPiece(currentPiece);
+                if(!board.newPiece(currentPiece)) {
+                    System.out.println("GAME OVER!");
+                    System.out.println("Lines cleared: " + linesCleared);
+                    window.setTitle("GAME OVER! Score: " + linesCleared);
+                    return;
+                }
                 window.setPreviewPiece(pieceManager.peekNext());
                 holdAvailable = true;
-                System.out.println("Lines cleared: " + linesCleared);
+                window.setTitle("Score: " + linesCleared);
             }
 
             if(System.currentTimeMillis() - lastDownMove > 800) {

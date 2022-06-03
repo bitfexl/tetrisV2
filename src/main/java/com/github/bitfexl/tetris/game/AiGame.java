@@ -12,8 +12,11 @@ public class AiGame {
 
     public static void main(String[] args) throws InterruptedException {
         // todo: empty columns evaluator
-        // simulateGames(50);
-        showGame();
+        if(args.length > 0 && args[0].equals("simulate")) {
+            simulateGames(10);
+        } else {
+            showGame();
+        }
     }
 
     public static double simulateGames(int count) {
@@ -25,9 +28,10 @@ public class AiGame {
         for(int i=0; i<count; i++) {
             while (ai.playNextPiece()) {
                 if(ai.getClearedLines() % 1000 == 0) {
-                    System.out.println(ai.getClearedLines());
+                    System.out.print(".");
                 }
             }
+            System.out.println();
 
             scores[i] = ai.getClearedLines();
             board.clear();
@@ -47,6 +51,7 @@ public class AiGame {
             System.out.println("Min: " + minScore);
             System.out.println("Max: " + maxScore);
             System.out.println("Avg: " + avg);
+            System.out.println();
 
         }
 
